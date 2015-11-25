@@ -1,0 +1,30 @@
+{
+  "name": "pnotifier",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "mocha"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/evertygosas/pnotifier.git"
+  },
+  "author": "Evertygo <contact@evertygo.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/evertygosas/pnotifier/issues"
+  },
+  "homepage": "https://github.com/evertygosas/pnotifier#readme",
+  "dependencies": {
+    "apn": "^1.7.5",
+    "async": "^1.5.0",
+    "lodash": "^3.10.1",
+    "node-gcm": "^0.13.0",
+    "pipe-event": "^0.1.0",
+    "wns": "^0.5.3"
+  },
+  "devDependencies": {
+    "mocha": "^2.3.4"
+  }
+}
