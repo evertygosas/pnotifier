@@ -8,23 +8,16 @@
 'use strict';
 
 var apn = require('apn');
-var util = require('util');
-var EventEmitter = require('events').EventEmitter;
 var _ = require('lodash');
-
-
-/**
- * Required params:
- * - cert
- * - key
- */
+var utils = require('../lib/utils');
 
 /**
  *
  *
  *
  */
-var ApnService = function (params) {
+var ApnService = function (emitter, params) {
+  this.emitter = emitter;
   this.params  = params || {};
   this.options = this.params.options || {}; 
 };
@@ -37,7 +30,18 @@ var ApnService = function (params) {
  */
 ApnService.prototype.createConnection = function (next) {
 
+  var vm = this;
+  var required = ['cert','key'];
+
   try {
+
+    var missing = utils.missingProperty(required, this.options);
+
+    if (!_.isEmpty(missing)) {
+      missing.forEach(function (prop) {
+        this.emitter.emit('error', prop + ' is missing.');
+      });
+    }
 
     this.connection = new apn.Connection(this.options);
     next(null);
@@ -56,8 +60,20 @@ ApnService.prototype.createConnection = function (next) {
  */
 ApnService.prototype.send = function (data, next) {
 
+  var vm = this;
+
+  var required = ['alert','payload'];
+
   try {
-    
+
+    var missing = utils.missingProperty(required, data);
+ 
+    if (!_.isEmpty(missing)) {
+      missing.forEach(function (prop) {
+        vm.emit('error', prop + ' is missing.');
+      });
+    }
+
     this.device = new apn.Device(this.params.token);
     
     var note = new apn.Notification();
@@ -71,6 +87,7 @@ ApnService.prototype.send = function (data, next) {
     this.connection.sendNotification(note, this.device);
     next(null);
   } catch (e) {
+    this.emitter.emit('error', 'Fail to send Notification.');
     next(e);
   }
 };

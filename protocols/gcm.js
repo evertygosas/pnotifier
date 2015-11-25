@@ -22,7 +22,8 @@ var _ = require('lodash');
  *
  *
  */
-var GcmService = function (params) {
+var GcmService = function (emitter, params) {
+  this.emitter = emitter;
   this.params  = params || {};
   this.options = this.params.options || {};
 };
@@ -39,6 +40,7 @@ GcmService.prototype.createConnection = function (next) {
     this.connection = new gcm.Sender(this.params.api_key);
     next(null);
   } catch (e) {
+    this.emitter.emit('error', 'gcm: connection failed.');
     next(e);
   }
 };
@@ -57,7 +59,7 @@ GcmService.prototype.send = function (data, next) {
   var tokens = this.params.tokens;
 
   this.connection.send(message, { registrationTokens: tokens }, function (err, response) {
-    if (err) return next(err);
+    if (err) return this.emitter.emit('error', err);
     next(null, response);
   });
 };

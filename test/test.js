@@ -1,5 +1,6 @@
 var assert = require('assert');
 var Pnotify = require('../').Service;
+var Emitter = require('events').EventEmitter;
 
 var errCb = function (err) {
 	console.log("APN ERROR: ", err);
@@ -8,6 +9,8 @@ var errCb = function (err) {
 describe('00 Basic APN test', function () {
 
 	it('should create an instance of ApnService', function () {
+
+		var ee = new Emitter();
 
 		var params = {
 			protocol: 'apn',
@@ -39,11 +42,13 @@ describe('00 Basic APN test', function () {
 		});
 
 		assert.equal('apn', 'apn');
+			ee.on('error', function (event) {
+			console.log(event);
+		});
 	});
 
 	describe('01 Basic GCM test', function () {
-
-	
+		assert.equal('apn', 'apn');
 	});
 
 });
