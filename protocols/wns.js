@@ -48,6 +48,7 @@ WnsService.prototype.createConnection = function (next) {
 WnsService.prototype.send = function (data, next) {
 
   var required = ['type','payload'];
+  var validTypes = ['toast', 'badge', 'raw', 'tile'];
 
   try {
 
@@ -56,6 +57,9 @@ WnsService.prototype.send = function (data, next) {
     if (!_.isEmpty(missing)) {
       return next(utils.listMissingProperties(missing));
     }
+
+    if (!_.includes(validTypes, data.type))
+      return next({message: 'Invalid type ' + data.type + '.' });
 
     _.merge(this.options, this.credentials);
 

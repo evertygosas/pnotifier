@@ -392,7 +392,7 @@ describe('03 Basic WNS tests.', function () {
 				assert.ifError(err);
 
 				service.send({}, function (err) {
-					assert.strictEqual(err.message, 'alert, payload is missing.');
+					assert.strictEqual(err.message, 'type, payload is missing.');
 				});
 			});
 		});
@@ -411,11 +411,36 @@ describe('03 Basic WNS tests.', function () {
 			service.createConnection(function (err) {
 				assert.ifError(err);
 
-				service.send({alert: 'Hello World!'}, function (err) {
+				service.send({type: 'badge'}, function (err) {
 					assert.strictEqual(err.message, 'payload is missing.');
 				});
 			});
-		});
+		});	
+
+		it('should return an error with invalid data type.', function () {
+
+			var invalid = rs.generate({
+				length: 5,
+				charset: 'alphabetic'
+			});
+
+			var service = new Pnotify({
+				protocol: 'wns',
+				credentials: {
+					client_id: rs.generate(),
+					client_secret: rs.generate(),
+					channelURI: rs.generate()
+				}
+			});
+
+			service.createConnection(function (err) {
+				assert.ifError(err);
+
+				service.send({type: invalid, payload: {}}, function (err) {
+					assert.strictEqual(err.message, 'Invalid type ' + invalid + '.');
+				});
+			});
+		});	
 	});
 
 
