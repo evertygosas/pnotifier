@@ -1,6 +1,6 @@
 
 /**
- * Pnotifier -
+ * Pnotifier - Push Notification Services Abstraction
  * 2015 Thomas Bazire <tbazire@evertygo.com>
  * License: MIT
  */
@@ -12,9 +12,9 @@ var _ = require('lodash');
 var utils = require('../lib/utils');
 
 /**
- *
- *
- *
+ * Initialize 
+ * @param {object} params, service parameters
+ * @param {object} emitter, EventEmitter (not used yet)
  */
 var ApnService = function (params, emitter) {
   this.protocol = 'apn';
@@ -24,11 +24,9 @@ var ApnService = function (params, emitter) {
   this.credentials = this.params.credentials || {}; 
 };
 
-
 /**
- *
- *
- *
+ * Create a connexion to the Apple Notification Service
+ * @param {function} next
  */
 ApnService.prototype.createConnection = function (next) {
 
@@ -52,11 +50,10 @@ ApnService.prototype.createConnection = function (next) {
 
 };
 
-
 /**
- *
- *
- *
+ * Send a notification to the Apple Notification Service.
+ * @param {object} data, data to send
+ * @param {function} next
  */
 ApnService.prototype.send = function (data, next) {
 
@@ -73,7 +70,6 @@ ApnService.prototype.send = function (data, next) {
   try {
 
     this.device = new apn.Device(this.options.token);
-    
     var note = new apn.Notification();
 
     note.expiry = data.expiry || Math.floor(Date.now() / 100) + 3600;
@@ -89,19 +85,23 @@ ApnService.prototype.send = function (data, next) {
   }
 };
 
-
+/**
+ * Provide protocol (service name)
+ */
 ApnService.prototype.getProtocol = function () {
   return this.protocol;
 }
 
 /**
- *
- *
- *
+ * Close connection with APN servers
+ * @param {function} next, will be executed 2600ms after the shutting down
  */
 ApnService.prototype.close = function (next) {
   this.connection.shutdown();
   if (next) setTimeout(next, 2600);
 };
 
+/**
+ * Exporting the module
+ */
 module.exports = ApnService;

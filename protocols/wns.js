@@ -1,6 +1,6 @@
 
 /**
- * Pnotifier -
+ * Pnotifier - Push Notification Services Abstraction
  * 2015 Thomas Bazire <tbazire@evertygo.com>
  * License: MIT
  */
@@ -11,6 +11,11 @@ var wns = require('wns');
 var _ = require('lodash');
 var utils = require('../lib/utils');
 
+/**
+ * Initialize 
+ * @param {object} params, service parameters
+ * @param {object} emitter, EventEmitter (not used yet)
+ */
 var WnsService = function (params, emitter) {
   this.protocol = 'wns';
   this.emitter = emitter;
@@ -19,6 +24,10 @@ var WnsService = function (params, emitter) {
   this.credentials = this.params.credentials || {}; 
 };
 
+/**
+ * Check all required parameters for the Windows Notification Service.
+ * @param {function} next
+ */
 WnsService.prototype.createConnection = function (next) {
 
   var required = ['client_id','client_secret','channelURI'];
@@ -28,9 +37,14 @@ WnsService.prototype.createConnection = function (next) {
   if (!_.isEmpty(missing)) {
     return next(utils.listMissingProperties(missing, 'credentials'));
   }
-
+  return next(null);
 };
 
+/**
+ * Send a notification to the Windows Notification Service.
+ * @param {object} data, data to send
+ * @param {function} next
+ */
 WnsService.prototype.send = function (data, next) {
 
   var required = ['type','payload'];
@@ -61,14 +75,22 @@ WnsService.prototype.send = function (data, next) {
 
 };
 
-
+/**
+ * Provide protocol (service name)
+ */
 WnsService.prototype.getProtocol = function () {
   return this.protocol;
 }
 
-
+/**
+ * Do nothing except executing the given callback.
+ * @param {function} next, callback
+ */
 WnsService.prototype.close = function (next) {
   next();
 };
 
+/**
+ * Exporting the module
+ */
 module.exports = WnsService;

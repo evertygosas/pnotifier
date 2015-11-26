@@ -1,6 +1,6 @@
 
 /**
- * Pnotifier -
+ * Pnotifier - Push Notification Services Abstraction
  * 2015 Thomas Bazire <tbazire@evertygo.com>
  * License: MIT
  */
@@ -11,17 +11,10 @@ var gcm = require('node-gcm');
 var _ = require('lodash');
 var utils = require('../lib/utils');
 
-
 /**
- * Required params:
- * - api_key
- * - tokens
- */
-
-/**
- *
- *
- *
+ * Initialize 
+ * @param {object} params, service parameters
+ * @param {object} emitter, EventEmitter (not used yet)
  */
 var GcmService = function (params, emitter) {
   this.protocol = 'gcm';
@@ -31,11 +24,9 @@ var GcmService = function (params, emitter) {
   this.credentials = this.params.credentials || {}; 
 };
 
-
 /**
- *
- *
- *
+ * Create a connexion to the Google Cloud Messaging service.
+ * @param {function} next
  */
 GcmService.prototype.createConnection = function (next) {
 
@@ -51,26 +42,24 @@ GcmService.prototype.createConnection = function (next) {
     }
 
     this.connection = new gcm.Sender(this.credentials.api_key);
-    next(null);
+    return next(null);
   } catch (e) {
     next(e);
   }
 };
 
-
 /**
- *
- *
- *
+ * Send a notification to the Google Cloud Messaging service.
+ * @param {object} data, data to send
+ * @param {function} next
  */
 GcmService.prototype.send = function (data, next) {
 
   try {
-    var message = new gcm.Message(this.options);
-
-    message.addData(data);
 
     var tokens = this.credentials.tokens;
+    var message = new gcm.Message(this.options);
+    message.addData(data);
 
     this.connection.send(message, { registrationTokens: tokens }, function (err, response) {
       if (err) return next(err);
@@ -83,13 +72,22 @@ GcmService.prototype.send = function (data, next) {
 
 };
 
-
+/**
+ * Provide protocol (service name)
+ */
 GcmService.prototype.getProtocol = function () {
   return this.protocol;
 }
 
+/**
+ * Do nothing except executing the given callback.
+ * @param {function} next, callback
+ */
 GcmService.prototype.close = function (next) {
   next();
 };
 
+/**
+ * Exporting the module
+ */
 module.exports = GcmService;
