@@ -7,6 +7,8 @@
 
 ### APN usage:
 
+It works the same for GCM or WNS. You just have to change the structure of the parameters object. And that's it !
+
 ```javascript
 
 var Pnotifier = require('pnotifier');
