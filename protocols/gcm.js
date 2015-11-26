@@ -36,8 +36,20 @@ var GcmService = function (emitter, params) {
  */
 GcmService.prototype.createConnection = function (next) {
 
+  var required = ['api_key','tokens'];
+
   try {
-    this.connection = new gcm.Sender(this.params.api_key);
+
+    // Check missing parameters
+    var missing = utils.missingProperty(required, this.params);
+
+    if (!_.isEmpty(missing)) {
+      missing.forEach(function (prop) {
+        this.emitter.emit('error', prop + ' is missing.');
+      });
+    }
+
+    this.connection = new gcm.Sender(this.options.api_key);
     next(null);
   } catch (e) {
     this.emitter.emit('error', 'gcm: connection failed.');
@@ -54,9 +66,10 @@ GcmService.prototype.createConnection = function (next) {
 GcmService.prototype.send = function (data, next) {
 
   var message = new gcm.Message(this.options);
+
   message.addData(data);
 
-  var tokens = this.params.tokens;
+  var tokens = this.options.tokens;
 
   this.connection.send(message, { registrationTokens: tokens }, function (err, response) {
     if (err) return this.emitter.emit('error', err);

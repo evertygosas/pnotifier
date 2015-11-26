@@ -31,7 +31,7 @@ var ApnService = function (emitter, params) {
 ApnService.prototype.createConnection = function (next) {
 
   var vm = this;
-  var required = ['cert','key'];
+  var required = ['cert','key','token'];
 
   try {
 
@@ -74,7 +74,7 @@ ApnService.prototype.send = function (data, next) {
       });
     }
 
-    this.device = new apn.Device(this.params.token);
+    this.device = new apn.Device(this.options.token);
     
     var note = new apn.Notification();
 
