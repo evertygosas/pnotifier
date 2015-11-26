@@ -1,3 +1,10 @@
+
+/**
+ * Pnotifier - Push Notification Services Abstraction
+ * 2015 Thomas Bazire <tbazire@evertygo.com>
+ * License: MIT
+ */
+
 var assert = require('assert');
 var rs = require('randomstring');
 var Pnotify = require('../').Service;

@@ -1,5 +1,5 @@
 /**
- * Pnotifier -
+ * Pnotifier - Push Notification Services Abstraction
  * 2015 Thomas Bazire <tbazire@evertygo.com>
  * License: MIT
  */
