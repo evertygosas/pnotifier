@@ -15,10 +15,12 @@ var Pnotifier = require('pnotifier');
 
 var service = new Pnotifier({
 	protocol: 'apn',
-	token: ['...','...']
-	options: {
+	credentials: {
 		cert: 'cert_path.pem',
 		key: 'key_path.pem'
+	},
+	options: {
+		...
 	}
 });
 

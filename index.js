@@ -18,17 +18,18 @@ protocols.forEach(function (protocol) {
 exports.Service = function (options) {
 	EventEmitter.call(this);
 
-	// Event handling
-	this.on('error', function (event) {
-		console.log(event);
-	});
-
 	this.options = options || {};
+
+	if (!this.options.protocol)
+		throw new Error('Missing protocol name.')
+	if (typeof this.options.protocol !== 'string')
+		throw new Error('Invalid protocol type. Expected String, get ' + typeof this.options.protocol);
 
 	if (_.contains(protocols, this.options.protocol)) {
 		this.service = eval('exports.' + this.options.protocol);
-		return new this.service(this, this.options);
+		return new this.service(this.options, this);
 	}
+	throw new Error('Invalid service named "' + this.options.protocol + '"');
 };
 
 exports.Service.prototype.__proto__ = EventEmitter.prototype;

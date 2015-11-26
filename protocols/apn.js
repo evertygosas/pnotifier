@@ -16,10 +16,12 @@ var utils = require('../lib/utils');
  *
  *
  */
-var ApnService = function (emitter, params) {
+var ApnService = function (params, emitter) {
+  this.protocol = 'apn';
   this.emitter = emitter;
-  this.params  = params || {};
-  this.options = this.params.options || {}; 
+  this.params = params || {};
+  this.options = this.params.options || {};
+  this.credentials = this.params.credentials || {}; 
 };
 
 
@@ -33,19 +35,17 @@ ApnService.prototype.createConnection = function (next) {
   var vm = this;
   var required = ['cert','key','token'];
 
+  var missing = utils.missingProperty(required, this.credentials);
+
+  if (!_.isEmpty(missing)) {
+    return next(utils.listMissingProperties(missing, 'credentials'));
+  }
+
+  _.merge(this.options, this.credentials);
+
   try {
-
-    var missing = utils.missingProperty(required, this.options);
-
-    if (!_.isEmpty(missing)) {
-      missing.forEach(function (prop) {
-        this.emitter.emit('error', prop + ' is missing.');
-      });
-    }
-
     this.connection = new apn.Connection(this.options);
-    next(null);
-
+    return next(null);
   } catch (e) {
     return next(e);
   }
@@ -64,15 +64,13 @@ ApnService.prototype.send = function (data, next) {
 
   var required = ['alert','payload'];
 
-  try {
-
-    var missing = utils.missingProperty(required, data);
+  var missing = utils.missingProperty(required, data);
  
-    if (!_.isEmpty(missing)) {
-      missing.forEach(function (prop) {
-        vm.emit('error', prop + ' is missing.');
-      });
-    }
+  if (!_.isEmpty(missing)) {
+    return next(utils.listMissingProperties(missing));
+  }
+
+  try {
 
     this.device = new apn.Device(this.options.token);
     
@@ -85,13 +83,16 @@ ApnService.prototype.send = function (data, next) {
     note.payload = data.payload;
 
     this.connection.sendNotification(note, this.device);
-    next(null);
+    return next(null, { message: 'sent!' });
   } catch (e) {
-    this.emitter.emit('error', 'Fail to send Notification.');
-    next(e);
+    return next(e);
   }
 };
 
+
+ApnService.prototype.getProtocol = function () {
+  return this.protocol;
+}
 
 /**
  *

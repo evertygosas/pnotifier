@@ -9,6 +9,7 @@
 
 var gcm = require('node-gcm');
 var _ = require('lodash');
+var utils = require('../lib/utils');
 
 
 /**
@@ -22,10 +23,12 @@ var _ = require('lodash');
  *
  *
  */
-var GcmService = function (emitter, params) {
+var GcmService = function (params, emitter) {
+  this.protocol = 'gcm';
   this.emitter = emitter;
-  this.params  = params || {};
+  this.params = params || {};
   this.options = this.params.options || {};
+  this.credentials = this.params.credentials || {}; 
 };
 
 
@@ -41,18 +44,15 @@ GcmService.prototype.createConnection = function (next) {
   try {
 
     // Check missing parameters
-    var missing = utils.missingProperty(required, this.params);
+    var missing = utils.missingProperty(required, this.credentials);
 
     if (!_.isEmpty(missing)) {
-      missing.forEach(function (prop) {
-        this.emitter.emit('error', prop + ' is missing.');
-      });
+      return next(utils.listMissingProperties(missing, 'credentials'));
     }
 
-    this.connection = new gcm.Sender(this.options.api_key);
+    this.connection = new gcm.Sender(this.credentials.api_key);
     next(null);
   } catch (e) {
-    this.emitter.emit('error', 'gcm: connection failed.');
     next(e);
   }
 };
@@ -65,16 +65,31 @@ GcmService.prototype.createConnection = function (next) {
  */
 GcmService.prototype.send = function (data, next) {
 
-  var message = new gcm.Message(this.options);
+  try {
+    var message = new gcm.Message(this.options);
 
-  message.addData(data);
+    message.addData(data);
 
-  var tokens = this.options.tokens;
+    var tokens = this.credentials.tokens;
 
-  this.connection.send(message, { registrationTokens: tokens }, function (err, response) {
-    if (err) return this.emitter.emit('error', err);
-    next(null, response);
-  });
+    this.connection.send(message, { registrationTokens: tokens }, function (err, response) {
+      if (err) return next(err);
+      next(null, response);
+    });
+
+  } catch (e) {
+    return next(e);
+  }
+
+};
+
+
+GcmService.prototype.getProtocol = function () {
+  return this.protocol;
+}
+
+GcmService.prototype.close = function (next) {
+  next();
 };
 
 module.exports = GcmService;

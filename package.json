@@ -25,6 +25,7 @@
     "wns": "^0.5.3"
   },
   "devDependencies": {
-    "mocha": "^2.3.4"
+    "mocha": "^2.3.4",
+    "randomstring": "^1.1.3"
   }
 }
