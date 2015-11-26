@@ -43,7 +43,7 @@ ApnService.prototype.createConnection = function (next) {
 
   try {
     this.connection = new apn.Connection(this.options);
-    return next(null);
+    return next(null, this.connection);
   } catch (e) {
     return next(e);
   }
@@ -62,14 +62,16 @@ ApnService.prototype.send = function (data, next) {
   var required = ['alert','payload'];
 
   var missing = utils.missingProperty(required, data);
- 
+
   if (!_.isEmpty(missing)) {
     return next(utils.listMissingProperties(missing));
   }
 
   try {
 
-    this.device = new apn.Device(this.options.token);
+    if (!(this.device = new apn.Device(this.options.token)))
+      throw new Error('Invalid token. Device not found.');
+
     var note = new apn.Notification();
 
     note.expiry = data.expiry || Math.floor(Date.now() / 100) + 3600;
@@ -78,7 +80,7 @@ ApnService.prototype.send = function (data, next) {
     note.alert = data.alert;
     note.payload = data.payload;
 
-    this.connection.sendNotification(note, this.device);
+    var ret = this.connection.sendNotification(note, this.device);
     return next(null, { message: 'sent!' });
   } catch (e) {
     return next(e);

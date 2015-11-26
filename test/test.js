@@ -174,7 +174,7 @@ describe('01 Basic APN tests.', function () {
 		});
 	});
 
-	describe('01.1 Direct call to APN', function () {
+	describe('01.1 Direct call to APN.', function () {
 
 		it('should return ok with a direct call of APN service.', function () {
 
@@ -191,6 +191,38 @@ describe('01 Basic APN tests.', function () {
 			service.createConnection(function (err) {
 				assert.ifError(err);
 			});
+		});
+
+	});
+
+	describe('01.2 Live testing APN.', function () {
+
+		it ('should do something...', function () {
+
+			var service = new Pnotify({
+				protocol: 'apn',
+				credentials: {
+					cert: 'cert.pem',
+					key: 'key.pem',
+					token: rs.generate({
+						length: 64,
+						charset: '0123456789abcdef'
+					})
+				}
+			});
+
+			service.createConnection(function (err, conn) {
+				assert.ifError(err);
+
+				service.send({
+					alert: 'Hello World!',
+					payload: { messageFrom: 'Thomas' }	
+				}, function (err, res) {
+					assert.ifError(err);
+					service.close();
+				});
+			});
+
 		});
 
 	});
@@ -307,6 +339,38 @@ describe('02 Basic GCM tests.', function () {
 		});
 	});
 
+	describe('02.2 Live testing GCM.', function () {
+
+		it ('should do something...', function () {
+
+			var service = new Pnotify({
+				protocol: 'gcm',
+				credentials: {
+					api_key: rs.generate({
+						length: 64,
+						charset: '0123456789abcdef'
+					}),
+					tokens: [rs.generate({
+						length: 64,
+						charset: '0123456789abcdef'
+					})]
+				}
+			});
+
+			service.createConnection(function (err, conn) {
+				assert.ifError(err);
+
+				service.send({
+					alert: 'Hello World!',
+				}, function (err, res) {
+					assert.ifError(err);
+					service.close();
+				});
+			});
+
+		});
+
+	});
 });
 
 describe('03 Basic WNS tests.', function () {
@@ -463,4 +527,33 @@ describe('03 Basic WNS tests.', function () {
 			});
 		});
 	});
+
+	describe('03.2 Live testing WNS.', function () {
+
+		it ('should do something...', function () {
+
+			var service = new Pnotify({
+				protocol: 'wns',
+				credentials: {
+					client_id: rs.generate(),
+					client_secret: rs.generate(),
+					channelURI: rs.generate()
+				}
+			});
+
+			service.createConnection(function (err, conn) {
+				assert.ifError(err);
+
+				service.send({
+					type: 'badge',
+					payload: rs.generate()
+				}, function (err, res) {
+					assert.ifError(err);
+					service.close();
+				});
+			});
+
+		});
+
+	});	
 });
