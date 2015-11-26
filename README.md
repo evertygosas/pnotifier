@@ -1,4 +1,6 @@
 # Pnotifier
+<br>
+[![Build Status](https://travis-ci.org/evertygosas/pnotifier.svg?branch=master)](https://travis-ci.org/evertygosas/pnotifier)
 
 ## WARNING:
 - Not working for now.

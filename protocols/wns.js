@@ -10,16 +10,6 @@
 var wns = require('wns');
 var _ = require('lodash');
 
-/**
- * Required params:
- * - client_id
- * - client_secret
- * - channelURI
- * - type
- * - payload
- */
-
-
 var WnsService = function (emitter, params) {
   this.emitter = emitter;
   this.params  = params || {};
