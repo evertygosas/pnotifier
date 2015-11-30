@@ -9,20 +9,25 @@
 
 var apn = require('apn');
 var _ = require('lodash');
+var sysu = require('util');
 var utils = require('../lib/utils');
+var EventEmitter = require('events').EventEmitter;
 
 /**
  * Initialize 
  * @param {object} params, service parameters
  * @param {object} emitter, EventEmitter (not used yet)
  */
-var ApnService = function (params, emitter) {
+var ApnService = function (params) {
+  EventEmitter.call(this);
+
   this.protocol = 'apn';
-  this.emitter = emitter;
   this.params = params || {};
   this.options = this.params.options || {};
   this.credentials = this.params.credentials || {}; 
 };
+
+sysu.inherits(ApnService, EventEmitter);
 
 /**
  * Create a connexion to the Apple Notification Service

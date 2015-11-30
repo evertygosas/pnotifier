@@ -9,6 +9,8 @@
 
 var gcm = require('node-gcm');
 var _ = require('lodash');
+var sysu = require('util');
+var EventEmitter = require('events').EventEmitter;
 var utils = require('../lib/utils');
 
 /**
@@ -16,13 +18,16 @@ var utils = require('../lib/utils');
  * @param {object} params, service parameters
  * @param {object} emitter, EventEmitter (not used yet)
  */
-var GcmService = function (params, emitter) {
+var GcmService = function (params) {
+  EventEmitter.call(this);
+
   this.protocol = 'gcm';
-  this.emitter = emitter;
   this.params = params || {};
   this.options = this.params.options || {};
   this.credentials = this.params.credentials || {}; 
 };
+
+sysu.inherits(GcmService, EventEmitter);
 
 /**
  * Create a connexion to the Google Cloud Messaging service.

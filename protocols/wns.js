@@ -9,6 +9,8 @@
 
 var wns = require('wns');
 var _ = require('lodash');
+var sysu = require('util');
+var EventEmitter = require('events').EventEmitter;
 var utils = require('../lib/utils');
 
 /**
@@ -16,13 +18,16 @@ var utils = require('../lib/utils');
  * @param {object} params, service parameters
  * @param {object} emitter, EventEmitter (not used yet)
  */
-var WnsService = function (params, emitter) {
+var WnsService = function (params) {
+  EventEmitter.call(this);
+
   this.protocol = 'wns';
-  this.emitter = emitter;
   this.params = params || {};
   this.options = this.params.options || {};
   this.credentials = this.params.credentials || {}; 
 };
+
+sysu.inherits(WnsService, EventEmitter);
 
 /**
  * Check all required parameters for the Windows Notification Service.
