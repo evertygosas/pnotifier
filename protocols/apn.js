@@ -14,7 +14,7 @@ var utils = require('../lib/utils');
 var EventEmitter = require('events').EventEmitter;
 
 /**
- * Initialize 
+ * Initialize
  * @param {object} params, service parameters
  * @param {object} emitter, EventEmitter (not used yet)
  */
@@ -24,7 +24,7 @@ var ApnService = function (params) {
   this.protocol = 'apn';
   this.params = params || {};
   this.options = this.params.options || {};
-  this.credentials = this.params.credentials || {}; 
+  this.credentials = this.params.credentials || {};
 };
 
 sysu.inherits(ApnService, EventEmitter);
@@ -48,11 +48,16 @@ ApnService.prototype.createConnection = function (next) {
 
   try {
     this.connection = new apn.Connection(this.options);
-    return next(null, this.connection);
+    next(null, this.connection);
   } catch (e) {
     return next(e);
   }
-
+  this.connection.on("connected", function() {
+    if (process.env.DEBUG) console.log("APN Connected");
+  });
+  this.connection.on("timeout", function() {
+    if (process.env.DEBUG) console.log("APN Timeout");
+  });
 };
 
 /**
@@ -85,9 +90,28 @@ ApnService.prototype.send = function (data, next) {
     note.alert = data.alert;
     note.payload = data.payload;
 
+    this.connection.on("transmitted", function(notification, device) {
+      if (device.token.toString('hex') == this.options.token) {
+        // Sent message OK : callback
+        next(null, {message: 'sent!'});
+      } else {
+        if (process.env.DEBUG) console.log("transmitted event with wrong token : " + device.token.toString('hex'));
+        next("Error : transmitted event woth wrong token : " + device.token.toString('hex'));
+      }
+    });
+    this.connection.on("transmissionError", function(errCode, notification, device) {
+      if (process.env.DEBUG) console.log("transmissionError : " + errCode);
+      if (errCode == 8)
+        return next("APN Error : invalid token");
+      next("APN Error code " + errCode);
+    });
+
+    if (process.env.DEBUG) console.log("APN Sending message...");
     var ret = this.connection.pushNotification(note, this.device);
-    return next(null, { message: 'sent!' });
+
+    //return next(null, { message: 'sent!' });
   } catch (e) {
+    if (process.env.DEBUG) console.log("Transmission error", e);
     return next(e);
   }
 };
@@ -101,11 +125,18 @@ ApnService.prototype.getProtocol = function () {
 
 /**
  * Close connection with APN servers
- * @param {function} next, will be executed 2600ms after the shutting down
+ * @param {function} next, will be executed after confirmed shutdown
  */
 ApnService.prototype.close = function (next) {
+  this.connection.on("disconnected", function() {
+    if (process.env.DEBUG) console.log("APN Disconnected");
+    if (next) next();
+  });
+  this.connection.on("sockerError", function() {
+    if (process.env.DEBUG) console.log("APN SocketError");
+    if (next) next();
+  });
   this.connection.shutdown();
-  if (next) setTimeout(next, 2600);
 };
 
 /**
