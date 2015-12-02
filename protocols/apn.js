@@ -79,13 +79,13 @@ ApnService.prototype.send = function (data, next) {
 
     var note = new apn.Notification();
 
-    note.expiry = data.expiry || Math.floor(Date.now() / 100) + 3600;
+    note.expiry = data.expiry || Math.floor(Date.now() / 1000) + 3600;
     note.badge = data.badge || 1;
     note.sound = data.sound || 'ping.aiff';
     note.alert = data.alert;
     note.payload = data.payload;
 
-    var ret = this.connection.sendNotification(note, this.device);
+    var ret = this.connection.pushNotification(note, this.device);
     return next(null, { message: 'sent!' });
   } catch (e) {
     return next(e);
