@@ -101,9 +101,10 @@ ApnService.prototype.send = function (data, next) {
     });
     this.connection.on("transmissionError", function(errCode, notification, device) {
       if (process.env.DEBUG) console.log("transmissionError : " + errCode);
-      if (errCode == 8)
-        return next("APN Error : invalid token");
-      return next("APN Error code " + errCode);
+      // Commented out because a failed message also calls transmitted event :(
+      // if (errCode == 8)
+      //   return next("APN Error : invalid token");
+      // return next("APN Error code " + errCode);
     });
 
     if (process.env.DEBUG) console.log("APN Sending message...");
