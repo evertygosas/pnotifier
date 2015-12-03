@@ -93,17 +93,17 @@ ApnService.prototype.send = function (data, next) {
     this.connection.on("transmitted", function(notification, device) {
       if (device.token.toString('hex') == this.options.token) {
         // Sent message OK : callback
-        next(null, {message: 'sent!'});
+        return next(null, {message: 'sent!'});
       } else {
         if (process.env.DEBUG) console.log("transmitted event with wrong token : " + device.token.toString('hex'));
-        next("Error : transmitted event woth wrong token : " + device.token.toString('hex'));
+        return next("Error : transmitted event woth wrong token : " + device.token.toString('hex'));
       }
     });
     this.connection.on("transmissionError", function(errCode, notification, device) {
       if (process.env.DEBUG) console.log("transmissionError : " + errCode);
       if (errCode == 8)
         return next("APN Error : invalid token");
-      next("APN Error code " + errCode);
+      return next("APN Error code " + errCode);
     });
 
     if (process.env.DEBUG) console.log("APN Sending message...");
@@ -130,11 +130,11 @@ ApnService.prototype.getProtocol = function () {
 ApnService.prototype.close = function (next) {
   this.connection.on("disconnected", function() {
     if (process.env.DEBUG) console.log("APN Disconnected");
-    if (next) next();
+    if (next) return next();
   });
   this.connection.on("sockerError", function() {
     if (process.env.DEBUG) console.log("APN SocketError");
-    if (next) next();
+    if (next) return next();
   });
   this.connection.shutdown();
 };
