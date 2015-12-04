@@ -1,4 +1,5 @@
 # Pnotifier [![Build Status](https://travis-ci.org/evertygosas/pnotifier.svg?branch=master)](https://travis-ci.org/evertygosas/pnotifier)
+Push Notification Services Abstraction
 
 ## WARNING:
 - Do not use in production for now. The project still under development.
