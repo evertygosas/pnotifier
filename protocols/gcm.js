@@ -89,7 +89,7 @@ GcmService.prototype.getProtocol = function () {
  * @param {function} next, callback
  */
 GcmService.prototype.close = function (next) {
-  next();
+  if (next) return next();
 };
 
 /**
