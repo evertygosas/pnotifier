@@ -96,7 +96,7 @@ WnsService.prototype.getProtocol = function () {
  * @param {function} next, callback
  */
 WnsService.prototype.close = function (next) {
-  next();
+  if (next) return next();
 };
 
 /**
