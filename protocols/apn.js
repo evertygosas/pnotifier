@@ -140,6 +140,15 @@ ApnService.prototype.close = function (next) {
   this.connection.shutdown();
 };
 
+ApnService.prototype.feedback = function(cb) {
+  this.options["batchFeedback"] = true;
+  this.options["interval"] = 0;
+  var feedback = new apn.Feedback(this.options);
+  feedback.on("feedback", function(devices) {
+    cb(devices);
+  });
+}
+
 /**
  * Exporting the module
  */
