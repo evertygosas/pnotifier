@@ -140,6 +140,10 @@ ApnService.prototype.close = function (next) {
   this.connection.shutdown();
 };
 
+/**
+ * Calls APNS Feedback service to get failed tokens
+ * @param {function} cb, called with devices array parameter
+ */
 ApnService.prototype.feedback = function(cb) {
   this.options["batchFeedback"] = true;
   this.options["interval"] = 0;
