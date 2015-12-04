@@ -1,9 +1,7 @@
-# Pnotifier
-<br>
-[![Build Status](https://travis-ci.org/evertygosas/pnotifier.svg?branch=master)](https://travis-ci.org/evertygosas/pnotifier)
+# Pnotifier [![Build Status](https://travis-ci.org/evertygosas/pnotifier.svg?branch=master)](https://travis-ci.org/evertygosas/pnotifier)
 
 ## WARNING:
-- Not working for now.
+- Do not use in production for now. The project still under development.
 
 ### Example with APN
 
@@ -11,7 +9,7 @@ It works the same for GCM or WNS. You just have to change the structure of the p
 
 ```javascript
 
-var Pnotifier = require('pnotifier');
+var Pnotifier = require('pnotifier').Service;
 
 var service = new Pnotifier({
 	protocol: 'apn',
@@ -95,7 +93,7 @@ var wnsConfig = {
 		channelURI: '...'
 	},
 	options: {
-		// node-apn options (except client\_id, client_secret and channelURI)
+		// node-apn options (except client_id, client_secret and channelURI)
 	}
 };
 
