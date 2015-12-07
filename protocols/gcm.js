@@ -64,7 +64,6 @@ GcmService.prototype.send = function (data, next) {
 
     var tokens = this.credentials.tokens;
     var message = new gcm.Message(this.options);
-    data.icon = 'ic_launcher';
     message.addNotification(data);
 
     this.connection.send(message, { registrationTokens: tokens }, function (err, response) {
