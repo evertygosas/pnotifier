@@ -58,13 +58,15 @@ GcmService.prototype.createConnection = function (next) {
  * @param {object} data, data to send
  * @param {function} next
  */
-GcmService.prototype.send = function (data, next) {
+GcmService.prototype.send = function (notification, next) {
 
   try {
 
     var tokens = this.credentials.tokens;
     var message = new gcm.Message(this.options);
-    message.addNotification(data);
+    
+    if (typeof notification === 'object')
+      message.addNotification(notification);
 
     this.connection.send(message, { registrationTokens: tokens }, function (err, response) {
       if (err) return next(err);
