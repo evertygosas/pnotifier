@@ -66,7 +66,7 @@ GcmService.prototype.send = function (notification, next) {
     var message = new gcm.Message(this.options);
     
     if (typeof notification === 'object')
-      message.addNotification(notification);
+      message.addData(notification);
 
     this.connection.send(message, { registrationTokens: tokens }, function (err, response) {
       if (err) return next(err);
