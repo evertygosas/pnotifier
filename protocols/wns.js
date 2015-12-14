@@ -10,6 +10,7 @@
 var wns = require('wns');
 var _ = require('lodash');
 var sysu = require('util');
+var async = require('async');
 var EventEmitter = require('events').EventEmitter;
 var utils = require('../lib/utils');
 
@@ -24,7 +25,8 @@ var WnsService = function (params) {
   this.protocol = 'wns';
   this.params = params || {};
   this.options = this.params.options || {};
-  this.credentials = this.params.credentials || {}; 
+  this.credentials = this.params.credentials || {};
+  this.tokens = [];
 };
 
 sysu.inherits(WnsService, EventEmitter);
@@ -35,7 +37,7 @@ sysu.inherits(WnsService, EventEmitter);
  */
 WnsService.prototype.createConnection = function (next) {
 
-  var required = ['client_id','client_secret','channelURI'];
+  var required = ['client_id','client_secret'];
   // Check missing parameters
   var missing = utils.missingProperty(required, this.credentials);
 
@@ -50,12 +52,14 @@ WnsService.prototype.createConnection = function (next) {
  * @param {object} data, data to send
  * @param {function} next
  */
-WnsService.prototype.send = function (data, next) {
+WnsService.prototype.send = function (tokens, data, next) {
 
   var required = ['type','payload'];
   var validTypes = ['toast', 'badge', 'raw', 'tile'];
 
   try {
+
+    this.tokens = typeof tokens === 'object' ? tokens : [];
 
     var missing = utils.missingProperty(required, data);
 
@@ -68,16 +72,21 @@ WnsService.prototype.send = function (data, next) {
 
     _.merge(this.options, this.credentials);
 
-    wns.send(
-      this.options.channelURI,
-      data.payload,
-      'wns/' + data.type,
-      this.options,
-      function (err, response) {
-        if (err) return next(err);
-        next(null, response);
-      }
-    );
+    var options = this.options;
+
+    async.each(this.tokens, function (token, done) {
+
+      wns.send(token, data.payload, 'wns/' + data.type, options,
+        function (err, response) {
+          if (err) return done(err);
+          done(null, response);
+        }
+      );
+   
+    }, function (err, info) {
+      return next(err, info);
+    });
+
   } catch (e) {
     return next(e);
   }

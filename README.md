@@ -25,7 +25,7 @@ var service = new Pnotifier({
 
 service.createConnection(function (err) {
 
-	service.send(
+	service.send(['list_of_devices_token','...'],
 		{
 			alert: 'Hello World!',
 			payload: {
@@ -51,7 +51,6 @@ var apnConfig = {
 	credentials: {
 		cert: 'cert_path.pem',
 		key: 'key_path.pem',
-		token: '...'
 	},
 	options: {
 		// node-apn options (except cert, key and token)
@@ -70,7 +69,6 @@ But with a particular structure as described below.
 var gcmConfig = {
 	credentials: {
 		api_key: '...',
-		tokens: ['...']
 	},
 	options: {
 		// node-gcm options (except api_key and tokens)

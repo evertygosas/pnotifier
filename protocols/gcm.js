@@ -24,7 +24,8 @@ var GcmService = function (params) {
   this.protocol = 'gcm';
   this.params = params || {};
   this.options = this.params.options || {};
-  this.credentials = this.params.credentials || {}; 
+  this.credentials = this.params.credentials || {};
+  this.tokens = [];
 };
 
 sysu.inherits(GcmService, EventEmitter);
@@ -35,7 +36,7 @@ sysu.inherits(GcmService, EventEmitter);
  */
 GcmService.prototype.createConnection = function (next) {
 
-  var required = ['api_key','tokens'];
+  var required = ['api_key'];
 
   try {
 
@@ -47,7 +48,8 @@ GcmService.prototype.createConnection = function (next) {
     }
 
     this.connection = new gcm.Sender(this.credentials.api_key);
-    return next(null);
+
+    return next(null, {message: 'Sender configured.'});
   } catch (e) {
     next(e);
   }
@@ -58,17 +60,18 @@ GcmService.prototype.createConnection = function (next) {
  * @param {object} data, data to send
  * @param {function} next
  */
-GcmService.prototype.send = function (notification, next) {
+GcmService.prototype.send = function (tokens, notification, next) {
 
   try {
 
-    var tokens = this.credentials.tokens;
+    this.tokens = typeof tokens === 'object' ? tokens : [];
+
     var message = new gcm.Message(this.options);
-    
+      
     if (typeof notification === 'object')
       message.addData(notification);
 
-    this.connection.send(message, { registrationTokens: tokens }, function (err, response) {
+    this.connection.send(message, { registrationTokens: this.tokens }, function (err, response) {
       if (err) return next(err);
       next(null, response);
     });

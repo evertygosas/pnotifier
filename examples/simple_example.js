@@ -5,7 +5,6 @@ var service = new Pnotifier({
 	credentials: {
 		cert: 'sample-cert.pem', // Certificate path
 		key: 'sample-key.pem',	 // Key path
-		token: '...'		 // Phone token
 	}
 });
 
@@ -17,7 +16,9 @@ service.createConnection(function (err, res) {
 		alert: 'Hello World!' // Content of the notification
 	};
 
-	service.send(msg, function (err, res) {
+	var tokens = ['...']; // Each devices to send the notification
+
+	service.send(tokens, msg, function (err, res) {
 	
 		service.close(function () {
 			console.log("Sent!");

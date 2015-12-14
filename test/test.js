@@ -77,7 +77,7 @@ describe('01 Basic APN tests.', function () {
 			});
 
 			service.createConnection(function (err) {
-				assert.strictEqual(err.message, 'credentials.cert, credentials.key, credentials.token is missing.');
+				assert.strictEqual(err.message, 'credentials.cert, credentials.key is missing.');
 			});
 
 		});
@@ -92,25 +92,10 @@ describe('01 Basic APN tests.', function () {
 			});
 
 			service.createConnection(function (err) {
-				assert.strictEqual(err.message, 'credentials.key, credentials.token is missing.');
+				assert.strictEqual(err.message, 'credentials.key is missing.');
 			});
 		});
 
-		it('should return an error without only one parameter.', function () {
-
-			var service = new Pnotify({
-				protocol: 'apn',
-				credentials: {
-					cert: 'cert.pem',
-					key: 'key.pem',
-				}
-			});
-
-			service.createConnection(function (err) {
-				assert.strictEqual(err.message, 'credentials.token is missing.');
-			});
-
-		});
 
 		it('should return ok with all needed parameters.', function () {
 
@@ -119,7 +104,6 @@ describe('01 Basic APN tests.', function () {
 				credentials: {
 					cert: 'cert.pem',
 					key: 'key.pem',
-					token: rs.generate()
 				}
 			});
 
@@ -139,15 +123,14 @@ describe('01 Basic APN tests.', function () {
 				protocol: 'apn',
 				credentials: {
 					cert: 'cert.pem',
-					key: 'key.pem',
-					token: rs.generate()
+					key: 'key.pem'
 				}
 			});
 
 			service.createConnection(function (err) {
 				assert.ifError(err);
 
-				service.send({}, function (err) {
+				service.send([rs.generate()], {}, function (err) {
 					assert.strictEqual(err.message, 'alert, payload is missing.');
 				});
 			});
@@ -159,15 +142,14 @@ describe('01 Basic APN tests.', function () {
 				protocol: 'apn',
 				credentials: {
 					cert: 'cert.pem',
-					key: 'key.pem',
-					token: rs.generate()
+					key: 'key.pem'
 				}
 			});
 
 			service.createConnection(function (err) {
 				assert.ifError(err);
 
-				service.send({alert: 'Hello World!'}, function (err) {
+				service.send([rs.generate()], {alert: 'Hello World!'}, function (err) {
 					assert.strictEqual(err.message, 'payload is missing.');
 				});
 			});
@@ -183,8 +165,7 @@ describe('01 Basic APN tests.', function () {
 			var service = new Apn({
 				credentials: {
 					cert: 'cert.pem',
-					key: 'key.pem',
-					token: rs.generate()
+					key: 'key.pem'
 				}
 			});
 
@@ -203,18 +184,19 @@ describe('01 Basic APN tests.', function () {
 				protocol: 'apn',
 				credentials: {
 					cert: 'cert.pem',
-					key: 'key.pem',
-					token: rs.generate({
-						length: 64,
-						charset: '0123456789abcdef'
-					})
+					key: 'key.pem'
 				}
 			});
+
+			var token = rs.generate({
+						length: 64,
+						charset: '0123456789abcdef'
+					});
 
 			service.createConnection(function (err, conn) {
 				assert.ifError(err);
 
-				service.send({
+				service.send([token], {
 					alert: 'Hello World!',
 					payload: { messageFrom: 'Thomas' }	
 				}, function (err, res) {
@@ -240,33 +222,18 @@ describe('02 Basic GCM tests.', function () {
 			});
 
 			service.createConnection(function (err) {			
-				assert.strictEqual(err.message, 'credentials.api_key, credentials.tokens is missing.');
+				assert.strictEqual(err.message, 'credentials.api_key is missing.');
 			});
 
 		});
 
-		it('should return an error without only one parameter.', function () {
-
-			var service = new Pnotify({
-				protocol: 'gcm',
-				credentials: {
-					api_key: rs.generate(),
-				}
-			});
-
-			service.createConnection(function (err) {
-				assert.strictEqual(err.message, 'credentials.tokens is missing.');
-			});
-
-		});
 
 		it('should return ok with all needed parameters.', function () {
 
 			var service = new Pnotify({
 				protocol: 'gcm',
 				credentials: {
-					api_key: rs.generate(),
-					tokens: rs.generate()
+					api_key: rs.generate()
 				}
 			});
 
@@ -285,15 +252,14 @@ describe('02 Basic GCM tests.', function () {
 			var service = new Pnotify({
 				protocol: 'gcm',
 				credentials: {
-					api_key: rs.generate(),
-					tokens: rs.generate()
+					api_key: rs.generate()
 				}
 			});
 
 			service.createConnection(function (err) {
 				assert.ifError(err);
 
-				service.send({}, function (err) {
+				service.send([rs.generate()], {}, function (err) {
 					assert.strictEqual(err.message, 'alert, payload is missing.');
 				});
 			});
@@ -304,15 +270,14 @@ describe('02 Basic GCM tests.', function () {
 			var service = new Pnotify({
 				protocol: 'gcm',
 				credentials: {
-					api_key: rs.generate(),
-					tokens: rs.generate()
+					api_key: rs.generate()
 				}
 			});
 
 			service.createConnection(function (err) {
 				assert.ifError(err);
 
-				service.send({alert: 'Hello World!'}, function (err) {
+				service.send([rs.generate()], {alert: 'Hello World!'}, function (err) {
 					assert.strictEqual(err.message, 'payload is missing.');
 				});
 			});
@@ -328,8 +293,7 @@ describe('02 Basic GCM tests.', function () {
 
 			var service = new Gcm({
 				credentials: {
-					api_key: rs.generate(),
-					tokens: rs.generate()
+					api_key: rs.generate()
 				}
 			});
 
@@ -349,18 +313,19 @@ describe('02 Basic GCM tests.', function () {
 					api_key: rs.generate({
 						length: 64,
 						charset: '0123456789abcdef'
-					}),
-					tokens: [rs.generate({
-						length: 64,
-						charset: '0123456789abcdef'
-					})]
+					})
 				}
 			});
+
+			var token = rs.generate({
+						length: 64,
+						charset: '0123456789abcdef'
+					}); 
 
 			service.createConnection(function (err, conn) {
 				assert.ifError(err);
 
-				service.send({
+				service.send([token], {
 					alert: 'Hello World!',
 				}, function (err, res) {
 					assert.ifError(err);
@@ -384,7 +349,7 @@ describe('03 Basic WNS tests.', function () {
 
 			service.createConnection(function (err) {			
 				assert.strictEqual(err.message,
-					'credentials.client_id, credentials.client_secret, credentials.channelURI is missing.');
+					'credentials.client_id, credentials.client_secret is missing.');
 			});
 
 		});
@@ -400,24 +365,8 @@ describe('03 Basic WNS tests.', function () {
 
 			service.createConnection(function (err) {
 				assert.strictEqual(err.message,
-					'credentials.client_secret, credentials.channelURI is missing.');
+					'credentials.client_secret is missing.');
 			});
-		});
-
-		it('should return an error without only one parameter.', function () {
-
-			var service = new Pnotify({
-				protocol: 'wns',
-				credentials: {
-					client_id: rs.generate(),
-					client_secret: rs.generate(),
-				}
-			});
-
-			service.createConnection(function (err) {
-				assert.strictEqual(err.message, 'credentials.channelURI is missing.');
-			});
-
 		});
 
 		it('should return ok with all needed parameters.', function () {
@@ -426,8 +375,7 @@ describe('03 Basic WNS tests.', function () {
 				protocol: 'wns',
 				credentials: {
 					client_id: rs.generate(),
-					client_secret: rs.generate(),
-					channelURI: rs.generate()
+					client_secret: rs.generate()
 				}
 			});
 
@@ -447,15 +395,14 @@ describe('03 Basic WNS tests.', function () {
 				protocol: 'wns',
 				credentials: {
 					client_id: rs.generate(),
-					client_secret: rs.generate(),
-					channelURI: rs.generate()
+					client_secret: rs.generate()
 				}
 			});
 
 			service.createConnection(function (err) {
 				assert.ifError(err);
 
-				service.send({}, function (err) {
+				service.send([rs.generate()], {}, function (err) {
 					assert.strictEqual(err.message, 'type, payload is missing.');
 				});
 			});
@@ -467,15 +414,14 @@ describe('03 Basic WNS tests.', function () {
 				protocol: 'wns',
 				credentials: {
 					client_id: rs.generate(),
-					client_secret: rs.generate(),
-					channelURI: rs.generate()
+					client_secret: rs.generate()
 				}
 			});
 
 			service.createConnection(function (err) {
 				assert.ifError(err);
 
-				service.send({type: 'badge'}, function (err) {
+				service.send([rs.generate()], {type: 'badge'}, function (err) {
 					assert.strictEqual(err.message, 'payload is missing.');
 				});
 			});
@@ -492,15 +438,14 @@ describe('03 Basic WNS tests.', function () {
 				protocol: 'wns',
 				credentials: {
 					client_id: rs.generate(),
-					client_secret: rs.generate(),
-					channelURI: rs.generate()
+					client_secret: rs.generate()
 				}
 			});
 
 			service.createConnection(function (err) {
 				assert.ifError(err);
 
-				service.send({type: invalid, payload: {}}, function (err) {
+				service.send([rs.generate()], {type: invalid, payload: {}}, function (err) {
 					assert.strictEqual(err.message, 'Invalid type ' + invalid + '.');
 				});
 			});
@@ -517,8 +462,7 @@ describe('03 Basic WNS tests.', function () {
 			var service = new Wns({
 				credentials: {
 					client_id: rs.generate(),
-					client_secret: rs.generate(),
-					channelURI: rs.generate()
+					client_secret: rs.generate()
 				}
 			});
 
@@ -536,15 +480,14 @@ describe('03 Basic WNS tests.', function () {
 				protocol: 'wns',
 				credentials: {
 					client_id: rs.generate(),
-					client_secret: rs.generate(),
-					channelURI: rs.generate()
+					client_secret: rs.generate()
 				}
 			});
 
 			service.createConnection(function (err, conn) {
 				assert.ifError(err);
 
-				service.send({
+				service.send([rs.generate()], {
 					type: 'badge',
 					payload: rs.generate()
 				}, function (err, res) {
