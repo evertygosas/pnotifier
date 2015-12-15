@@ -101,6 +101,7 @@ ApnService.prototype.send = function (tokens, data, next) {
         note.alert = data.alert;
       }
       note.payload = data.payload;
+      note.setContentAvailable(1);
 
       connection.on("transmitted", function(notification, device) {
         if (device.token.toString('hex') == token) {
