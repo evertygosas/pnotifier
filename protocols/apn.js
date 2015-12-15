@@ -73,7 +73,7 @@ ApnService.prototype.send = function (tokens, data, next) {
 
   var vm = this;
 
-  var required = ['alert','payload'];
+  var required = ['payload'];
 
   var missing = utils.missingProperty(required, data);
 
@@ -88,18 +88,20 @@ ApnService.prototype.send = function (tokens, data, next) {
   async.each(this.tokens, function (token, done) {
 
     try {
-    
+
       if (!(device = new apn.Device(token)))
         throw new Error('Invalid token. Device not found.');
 
       var note = new apn.Notification();
 
       note.expiry = data.expiry || Math.floor(Date.now() / 1000) + 3600;
-      note.badge = data.badge   || 1;
-      note.sound = data.sound   || 'ping.aiff';
-      note.alert = data.alert;
+      if (data.alert) {
+        note.badge = data.badge   || 1;
+        note.sound = data.sound   || 'ping.aiff';
+        note.alert = data.alert;
+      }
       note.payload = data.payload;
-      
+
       connection.on("transmitted", function(notification, device) {
         if (device.token.toString('hex') == token) {
           // Sent message OK : callback
