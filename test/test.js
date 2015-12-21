@@ -131,7 +131,7 @@ describe('01 Basic APN tests.', function () {
 				assert.ifError(err);
 
 				service.send([rs.generate()], {}, function (err) {
-					assert.strictEqual(err.message, 'alert, payload is missing.');
+					assert.strictEqual(err.message, 'payload is missing.');
 				});
 			});
 		});
