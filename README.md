@@ -1,9 +1,6 @@
 # Pnotifier [![Build Status](https://travis-ci.org/evertygosas/pnotifier.svg?branch=master)](https://travis-ci.org/evertygosas/pnotifier)
 Push Notification Services Abstraction
 
-## WARNING:
-- Do not use in production for now. The project still under development.
-
 ### Example with APN
 
 It works the same for GCM or WNS. You just have to change the structure of the parameters object. And that's it !
